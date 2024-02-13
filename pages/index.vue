@@ -11,92 +11,78 @@
     </div>
     <div class="row gy-3 mt-3 mx-4">
       <div class="col-6 text-center">
-        <div
-          class="card border-0 n-bg-secondary n-rounded"
-          style="height: 100px"
-        >
+        <div class="card border-0 n-bg-secondary n-rounded" style="height: 100px">
           <span class="w-100">PH Tanah</span>
-          <h1 class="m-0">6.2</h1>
-          <span class="w-100 text-success">Baik</span>
+          <h1 class="m-0">{{phTanah}}</h1>
+          <span class="w-100">{{statusKelembapan}}</span>
         </div>
       </div>
       <div class="col-6 text-center">
-        <div
-          class="card border-0 n-bg-secondary n-rounded"
-          style="height: 100px"
-        >
+        <div class="card border-0 n-bg-secondary n-rounded" style="height: 100px">
           <span class="w-100">Kelembapan Tanah</span>
-          <h1 class="m-0">313</h1>
-          <span class="w-100 text-danger">Tidak Baik</span>
+          <h1 class="m-0">{{ kelembapan }}%</h1>
+          <span class="w-100 "  :class="{ 'text-danger': (statusPHTanah!='Baik'), 'text-success': (statusPHTanah=='Baik') }">{{statusPHTanah}}</span>
         </div>
       </div>
       <div class="col-6 text-center">
-        <div
-          class="card border-0 n-bg-secondary n-rounded"
-          style="height: 100px"
-        >
+        <div class="card border-0 n-bg-secondary n-rounded" style="height: 100px">
           <span class="w-100">Tinggi Air</span>
-          <h1 class="m-0">0</h1>
+          <h1 class="m-0">{{ ketinggianAir }}</h1>
         </div>
       </div>
       <div class="col-6 text-center">
-        <div
-          class="card border-0 n-bg-secondary n-rounded"
-          style="height: 100px"
-        >
+        <div class="card border-0 n-bg-secondary n-rounded" style="height: 100px">
           <span class="w-100">Cairan Hama</span>
-          <h1 class="m-0">KOSONG</h1>
+          <h1 class="m-0">{{ statusDirigen }}</h1>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { ref, onValue } from "firebase/database";
 export default {
-//   async fetch() {
-//     const snapshot = await this.$firebase()
-//       .database()
-//       .ref("/")
-//       .once("kelembapan");
-//     this.items = snapshot.val();
-//   },
-//   data() {
-//     return {
-//       items: [],
-//     };
-//   },
+  data() {
+    return {
+      kelembapan: 0,
+      statusKelembapan: "",
+      ketinggianAir: 0,
+      phTanah: 0,
+      statusPHTanah: "",
+      statusDirigen: ""
+    };
+  },
 
-mounted(){
-  // Initialize Firebase
-var firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "https://ngani-87091-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
-};
+  mounted() {
 
-firebase.initializeApp(firebaseConfig);
-
-// Get a reference to the database service
-var database = firebase.database();
-
-// Reference to your Firebase database
-var ref = database.ref("/"); // Change "/" to the path of your data if it's not at the root level
-
-// Read data from Firebase Realtime Database
-ref.once("value")
-  .then(function(snapshot) {
-    // Get data snapshot
-    var data = snapshot.val();
-    console.log(data); // Output the retrieved data to console
-  })
-  .catch(function(error) {
-    console.error("Error reading data:", error);
-  });
-}
+    const kelembapanRef = ref(this.$firebaseData, 'Kelembapan');
+    const ketinggianAirRef = ref(this.$firebaseData, 'KetinggiAir');
+    const phTanahRef = ref(this.$firebaseData, 'PHTanah');
+    const statusDirigenRef = ref(this.$firebaseData, 'StatusDirigen');
+    onValue(kelembapanRef, (snapshot) => {
+      this.kelembapan = snapshot.val();
+      if (this.kelembapan >= 220) {
+        this.statusKelembapan = "Kering"
+      } else if (this.kelembapan >= 140) {
+        this.statusKelembapan = "Lembap"
+      } else {
+        his.statusKelembapan = "Basah"
+      }
+    });
+    onValue(ketinggianAirRef, (snapshot) => {
+      this.ketinggianAir = snapshot.val();
+    });
+    onValue(phTanahRef, (snapshot) => {
+      this.phTanah = snapshot.val();
+      if (this.phTanah >= 5.5 && this.phTanah <= 6.5){
+        this.statusPHTanah = "Baik"
+      }else{
+        this.statusPHTanah = "Tidak Baik"
+      }
+    });
+    onValue(statusDirigenRef, (snapshot) => {
+      this.statusDirigen = snapshot.val();
+    });
+  }
 };
 </script>

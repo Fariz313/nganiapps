@@ -19,6 +19,7 @@
     "fontawesome": "^5.6.3",
     "fortawesome": "^0.0.1-security",
     "nuxt": "^3.10.1",
+    "nuxt-storage": "^1.2.2",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },

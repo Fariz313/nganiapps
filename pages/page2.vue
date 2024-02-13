@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div
-      class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded"
-    >
+    <div class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded">
       <div class="w-100 d-flex justify-content-around">
         <h3>SUHU CUACA</h3>
         <h3>24 Derajat</h3>
@@ -13,30 +11,48 @@
     <div class="row gy-3 mt-3 mx-4">
       <div class="col-6 text-center">
         <div class="card p-4 border-0 n-bg-secondary n-rounded">
-          <h1 class="m-0">6.2</h1>
+          <h1 class="m-0">{{ phTanah }}</h1>
         </div>
       </div>
       <div class="col-6 text-center">
         <div class="card p-4 border-0 n-bg-secondary n-rounded">
-          <h1 class="m-0">Baik</h1>
+          <h1 class="m-0">{{ statusPHTanah }}</h1>
         </div>
       </div>
     </div>
     <h1 class="text-center my-3 n-text-tersier">HISTORICAL PH TANAH</h1>
-    <canvas id="myChart" ></canvas>
+    <canvas id="myChart"></canvas>
   </div>
 </template>
 <script>
 import Chart from "chart.js/auto";
+import { ref, onValue } from "firebase/database";
 export default {
+  data() {
+    return {
+      phTanah: 0,
+      statusPHTanah: "-"
+    }
+  },
   mounted() {
+    const phTanahRef = ref(this.$firebaseData, 'PHTanah');
+    onValue(phTanahRef, (snapshot) => {
+      this.phTanah = snapshot.val();
+      if (this.phTanah >= 5.5 && this.phTanah <= 6.5) {
+        this.statusPHTanah = "Baik"
+      } else {
+        this.statusPHTanah = "Tidak Baik"
+      }
+      this.$storeByDay("ph",snapshot.val());
+    });
     this.$nextTick(function () {
+      console.log("sData",this.$getDataStored("ph"));
       const data = {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         datasets: [
           {
             label: "Grafik PH Tanah",
-            data: [6.2],
+            data: this.$getDataStored("ph"),
             backgroundColor: "#712DDF",
             borderWidth: 0,
           },
@@ -57,39 +73,6 @@ export default {
         type: "bar",
         data: data,
         options: options,
-      });
-
-      // D CHART
-
-      const DATA_COUNT = 5;
-      const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
-
-      const dataD = {
-        datasets: [
-          {
-            label: "Dataset 1",
-            data: [30, 70],
-            backgroundColor: ["#A536E9", "#712DDF"],
-            borderWidth: 0,
-          },
-        ],
-      };
-      const ctxD = document.getElementById("dChart").getContext("2d");
-      const dChart = new Chart(ctxD, {
-        type: "doughnut",
-        data: dataD,
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "top",
-            },
-            title: {
-              display: false,
-              text: "Chart.js Doughnut Chart",
-            },
-          },
-        },
       });
     });
   },

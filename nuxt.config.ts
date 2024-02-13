@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "~/assets/style.css",
     "~/assets/sizing.css"
   ],
+  plugins:["~/plugins/firebase.js"],
   ssr:false,
   modules: ['@vite-pwa/nuxt'],
   pwa: {
