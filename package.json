@@ -14,6 +14,8 @@
     "@fortawesome/fontawesome-free": "^6.5.1",
     "bootstrap": "^5.3.2",
     "chart.js": "^4.4.1",
+    "firebase": "^10.8.0",
+    "firebase-admin": "^12.0.0",
     "fontawesome": "^5.6.3",
     "fortawesome": "^0.0.1-security",
     "nuxt": "^3.10.1",

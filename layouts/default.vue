@@ -2,7 +2,7 @@
   <div class="container n-container-primary p-0">
     <nav class="navbar py-0">
       <div class="container-fluid py-3" style="background:#D4B053">
-        <img src="~/assets/img/logo.png" alt="" srcset="" />
+        <img src="~/assets/img/logo.png" alt="" height="60px" srcset="" />
         <div>
           <h4>
             Informasi Sawah <br />
