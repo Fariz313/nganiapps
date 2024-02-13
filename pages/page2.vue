@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded">
+    <div
+      class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded"
+    >
       <div class="w-100 d-flex justify-content-around">
         <h3>SUHU CUACA</h3>
         <h3>24 Derajat</h3>
@@ -26,27 +28,29 @@
 </template>
 <script>
 import Chart from "chart.js/auto";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 export default {
   data() {
     return {
       phTanah: 0,
-      statusPHTanah: "-"
-    }
+      statusPHTanah: "-",
+    };
   },
   mounted() {
-    const phTanahRef = ref(this.$firebaseData, 'PHTanah');
+    const phTanahRef = ref(this.$firebaseData, "PHTanah");
     onValue(phTanahRef, (snapshot) => {
       this.phTanah = snapshot.val();
       if (this.phTanah >= 5.5 && this.phTanah <= 6.5) {
-        this.statusPHTanah = "Baik"
+        this.statusPHTanah = "Baik";
       } else {
-        this.statusPHTanah = "Tidak Baik"
+        this.statusPHTanah = "Tidak Baik";
       }
-      this.$storeByDay("ph",snapshot.val());
+      const dataWStore = this.$storeByDay("ph", snapshot.val());
+      console.log(dataWStore);
+      set(ref(this.$firebaseData, "StatisticPH"), dataWStore);
     });
     this.$nextTick(function () {
-      console.log("sData",this.$getDataStored("ph"));
+      console.log("sData", this.$getDataStored("ph"));
       const data = {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         datasets: [
@@ -73,6 +77,12 @@ export default {
         type: "bar",
         data: data,
         options: options,
+      });
+      const statPhTanahRef = ref(this.$firebaseData, "StatisticPH");
+      onValue(statPhTanahRef, (snapshot) => {
+        const StatPH = snapshot.val();
+        myChart.data.datasets[0].data = StatPH;
+        myChart.update();
       });
     });
   },

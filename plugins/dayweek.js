@@ -20,8 +20,8 @@ export default defineNuxtPlugin(() => {
                     setData(data,dataGot);
                 }
                 dataGot[dayKey] = value
-                console.log("dataGot",dataGot);
                 setData(data,dataGot);
+                return dataGot;
             },
             getDataStored: (data)=>{return getData(data)}
         }

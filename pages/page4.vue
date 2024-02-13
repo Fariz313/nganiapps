@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded">
+    <div
+      class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded"
+    >
       <div class="w-100 d-flex justify-content-around">
         <h3>SUHU CUACA</h3>
         <h3>24 Derajat</h3>
@@ -14,7 +16,6 @@
           <h1 class="m-0">{{ ketinggianAir }}</h1>
         </div>
       </div>
-
     </div>
     <h1 class="text-center my-3 n-text-tersier">HISTORICAL KETINGGIAN AIR</h1>
     <canvas id="myChart"></canvas>
@@ -22,19 +23,19 @@
 </template>
 <script>
 import Chart from "chart.js/auto";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue,set } from "firebase/database";
 export default {
   data() {
     return {
-      ketinggianAir: 0
-
-    }
+      ketinggianAir: 0,
+    };
   },
   mounted() {
-    const ketinggianAirRef = ref(this.$firebaseData, 'KetinggiAir');
+    const ketinggianAirRef = ref(this.$firebaseData, "KetinggiAir");
     onValue(ketinggianAirRef, (snapshot) => {
       this.ketinggianAir = snapshot.val();
-      this.$storeByDay("ketinggianAir", snapshot.val())
+      this.$storeByDay("ketinggianAir", snapshot.val());
+      set(ref(this.$firebaseData, "StatisticKetinggianAir"), this.$storeByDay("ketinggianAir", snapshot.val()));
     });
     this.$nextTick(function () {
       const data = {
@@ -63,6 +64,12 @@ export default {
         type: "bar",
         data: data,
         options: options,
+      });
+      const StatisticKetinggianAirRef = ref(this.$firebaseData, "StatisticKetinggianAir");
+      onValue(StatisticKetinggianAirRef, (snapshot) => {
+        const StatK = snapshot.val();
+        myChart.data.datasets[0].data = StatK;
+        myChart.update();
       });
     });
   },

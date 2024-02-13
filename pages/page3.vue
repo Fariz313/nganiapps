@@ -26,7 +26,7 @@
 </template>
 <script>
 import Chart from "chart.js/auto";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue,set } from "firebase/database";
 export default {
   data() {
     return {
@@ -46,6 +46,8 @@ export default {
         his.statusKelembapan = "Basah"
       }
       this.$storeByDay("kelembapan", snapshot.val());
+      set(ref(this.$firebaseData, "StatisticKelembapan"), this.$storeByDay("kelembapan", snapshot.val()));
+
     });
     this.$nextTick(function () {
       const data = {
@@ -73,7 +75,12 @@ export default {
         data: data,
         options: options,
       });
-
+      const statKelembapanRef = ref(this.$firebaseData, "StatisticKelembapan");
+      onValue(statKelembapanRef, (snapshot) => {
+        const StatK = snapshot.val();
+        myChart.data.datasets[0].data = StatK;
+        myChart.update();
+      });
     });
   },
 };
