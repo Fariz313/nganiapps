@@ -11,6 +11,11 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.1",
+    "bootstrap": "^5.3.2",
+    "chart.js": "^4.4.1",
+    "fontawesome": "^5.6.3",
+    "fortawesome": "^0.0.1-security",
     "nuxt": "^3.10.1",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"

@@ -4,29 +4,28 @@ export default defineNuxtConfig({
     baseURL: '/nganiapps/', // baseURL: '/<repository>/'
     buildAssetsDir: 'assets', // don't use "_" at the begining of the folder name to avoids nojkill conflict
   },
+  css: [
+    "bootstrap/dist/css/bootstrap.min.css",
+    "@fortawesome/fontawesome-free/css/all.css",
+    "~/assets/style.css",
+    "~/assets/sizing.css"
+  ],
+  ssr:false,
   modules: ['@vite-pwa/nuxt'],
   pwa: {
-    strategies: 'injectManifest' ,
-    srcDir: 'service-worker' ,
-    filename: 'sw.ts',
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Nuxt Vite PWA',
-      short_name: 'NuxtVitePWA',
+      name: 'Ngani',
+      short_name: 'Ngani',
       theme_color: '#ffffff',
       icons: [
         {
-          src: 'pwa-192x192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src: 'pwa-512x512.png',
+          src: 'logo.png',
           sizes: '512x512',
           type: 'image/png',
         },
         {
-          src: 'pwa-512x512.png',
+          src: 'logo.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: 'any maskable',
