@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded">
+    <div
+      class="card border-0 n-bg-secondary mx-5 mt-5 py-2 text-center n-rounded"
+    >
       <div class="w-100 d-flex justify-content-around">
         <h3>SUHU CUACA</h3>
         <h3>24 Derajat</h3>
@@ -26,29 +28,15 @@
 </template>
 <script>
 import Chart from "chart.js/auto";
-import { ref, onValue,set } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 export default {
   data() {
     return {
       kelembapan: 0,
-      statusKelembapan: ""
-    }
+      statusKelembapan: "",
+    };
   },
   mounted() {
-    const kelembapanRef = ref(this.$firebaseData, 'Kelembapan');
-    onValue(kelembapanRef, (snapshot) => {
-      this.kelembapan = snapshot.val();
-      if (this.kelembapan >= 220) {
-        this.statusKelembapan = "Kering"
-      } else if (this.kelembapan >= 140) {
-        this.statusKelembapan = "Lembap"
-      } else {
-        his.statusKelembapan = "Basah"
-      }
-      this.$storeByDay("kelembapan", snapshot.val());
-      set(ref(this.$firebaseData, "StatisticKelembapan"), this.$storeByDay("kelembapan", snapshot.val()));
-
-    });
     this.$nextTick(function () {
       const data = {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -64,8 +52,7 @@ export default {
 
       const options = {
         scales: {
-          y: {
-          },
+          y: {},
         },
       };
 
@@ -75,11 +62,27 @@ export default {
         data: data,
         options: options,
       });
+      let StatK = null;
       const statKelembapanRef = ref(this.$firebaseData, "StatisticKelembapan");
       onValue(statKelembapanRef, (snapshot) => {
-        const StatK = snapshot.val();
+        StatK = snapshot.val();
         myChart.data.datasets[0].data = StatK;
         myChart.update();
+      });
+      const kelembapanRef = ref(this.$firebaseData, "Kelembapan");
+      onValue(kelembapanRef, (snapshot) => {
+        this.kelembapan = snapshot.val();
+        if (this.kelembapan >= 220) {
+          this.statusKelembapan = "Kering";
+        } else if (this.kelembapan >= 140) {
+          this.statusKelembapan = "Lembap";
+        } else {
+          his.statusKelembapan = "Basah";
+        }
+        if (StatK != null) {
+          let nstoredStat = this.$storeByDay("kelembapan", snapshot.val(),StatK);
+          set(ref(this.$firebaseData, "StatisticKelembapan"), nstoredStat);
+        }
       });
     });
   },

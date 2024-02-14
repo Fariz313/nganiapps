@@ -37,18 +37,6 @@ export default {
     };
   },
   mounted() {
-    const phTanahRef = ref(this.$firebaseData, "PHTanah");
-    onValue(phTanahRef, (snapshot) => {
-      this.phTanah = snapshot.val();
-      if (this.phTanah >= 5.5 && this.phTanah <= 6.5) {
-        this.statusPHTanah = "Baik";
-      } else {
-        this.statusPHTanah = "Tidak Baik";
-      }
-      const dataWStore = this.$storeByDay("ph", snapshot.val());
-      console.log(dataWStore);
-      set(ref(this.$firebaseData, "StatisticPH"), dataWStore);
-    });
     this.$nextTick(function () {
       console.log("sData", this.$getDataStored("ph"));
       const data = {
@@ -78,11 +66,26 @@ export default {
         data: data,
         options: options,
       });
+      let StatPH = null
       const statPhTanahRef = ref(this.$firebaseData, "StatisticPH");
       onValue(statPhTanahRef, (snapshot) => {
-        const StatPH = snapshot.val();
+        StatPH = snapshot.val();
         myChart.data.datasets[0].data = StatPH;
         myChart.update();
+      });
+
+      const phTanahRef = ref(this.$firebaseData, "PHTanah");
+      onValue(phTanahRef, (snapshot) => {
+        this.phTanah = snapshot.val();
+        if (this.phTanah >= 5.5 && this.phTanah <= 6.5) {
+          this.statusPHTanah = "Baik";
+        } else {
+          this.statusPHTanah = "Tidak Baik";
+        }
+        if(StatPH!=null){
+          const dataWStore = this.$storeByDay("ph", snapshot.val(),StatPH);
+          set(ref(this.$firebaseData, "StatisticPH"), dataWStore);
+        }
       });
     });
   },

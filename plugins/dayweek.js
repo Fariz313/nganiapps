@@ -11,16 +11,10 @@ const daysOfWeek = {
 export default defineNuxtPlugin(() => {
     return {
         provide: {
-            storeByDay: (data, value) => {
+            storeByDay: (data, value,dataGot) => {
                 const dayOfWeek = new Date().getDay()
                 const dayKey = dayOfWeek;
-                let dataGot = getData(data)
-                if(!dataGot){
-                    dataGot = [0,0,0,0,0,0,0];
-                    setData(data,dataGot);
-                }
                 dataGot[dayKey] = value
-                setData(data,dataGot);
                 return dataGot;
             },
             getDataStored: (data)=>{return getData(data)}

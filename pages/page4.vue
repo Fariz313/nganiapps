@@ -23,7 +23,7 @@
 </template>
 <script>
 import Chart from "chart.js/auto";
-import { ref, onValue,set } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 export default {
   data() {
     return {
@@ -31,19 +31,13 @@ export default {
     };
   },
   mounted() {
-    const ketinggianAirRef = ref(this.$firebaseData, "KetinggiAir");
-    onValue(ketinggianAirRef, (snapshot) => {
-      this.ketinggianAir = snapshot.val();
-      this.$storeByDay("ketinggianAir", snapshot.val());
-      set(ref(this.$firebaseData, "StatisticKetinggianAir"), this.$storeByDay("ketinggianAir", snapshot.val()));
-    });
     this.$nextTick(function () {
       const data = {
         labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         datasets: [
           {
             label: "Grafik Kelembapan Tanah",
-            data: this.$getDataStored("ketinggianAir"),
+            data: [],
             backgroundColor: "#712DDF",
             borderWidth: 0,
           },
@@ -65,11 +59,27 @@ export default {
         data: data,
         options: options,
       });
-      const StatisticKetinggianAirRef = ref(this.$firebaseData, "StatisticKetinggianAir");
+      const StatisticKetinggianAirRef = ref(
+        this.$firebaseData,
+        "StatisticKetinggianAir"
+      );
+      let StatK = null;
       onValue(StatisticKetinggianAirRef, (snapshot) => {
-        const StatK = snapshot.val();
+        StatK = snapshot.val();
         myChart.data.datasets[0].data = StatK;
         myChart.update();
+      });
+      const ketinggianAirRef = ref(this.$firebaseData, "KetinggiAir");
+      onValue(ketinggianAirRef, (snapshot) => {
+        this.ketinggianAir = snapshot.val();
+        if (StatK != null) {
+          const updatedStat = this.$storeByDay(
+            "ketinggianAir",
+            snapshot.val(),
+            StatK
+          );
+          set(ref(this.$firebaseData, "StatisticKetinggianAir"), updatedStat);
+        }
       });
     });
   },
